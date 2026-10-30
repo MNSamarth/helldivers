@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 // Runs a level: a short preview of the whole map with the lights on, then
 // the camera zooms in on the player and the lights go out, leaving only a
@@ -121,7 +120,6 @@ public class GameManager : MonoBehaviour
         }
 
         chargesRemaining = revealCharges;
-        AddMazeLegend();
         UpdateChargesText();
         UpdateStarsText();
 
@@ -131,56 +129,6 @@ public class GameManager : MonoBehaviour
             ("attempt", attempt));
 
         StartCoroutine(BeginLevel());
-    }
-
-    private void AddMazeLegend()
-    {
-        PortalController portal = FindAnyObjectByType<PortalController>();
-        if (portal != null)
-            AddLegendEntry("Portal", portal.GetComponentInChildren<SpriteRenderer>());
-
-        Hazard spike = FindAnyObjectByType<Hazard>();
-        if (spike != null)
-            AddLegendEntry("Spike", spike.GetComponentInChildren<SpriteRenderer>());
-    }
-
-    private void AddLegendEntry(string entryName, SpriteRenderer appearance)
-    {
-        if (appearance == null || statusText.canvas == null)
-            return;
-
-        Transform items = statusText.canvas.rootCanvas.transform.Find("HUD Bottom Bar/LEGEND/Items");
-        if (items == null || items.Find(entryName) != null)
-            return;
-
-        // Older HUD builds used this name for the spike legend entry.
-        if (entryName == "Spike" && items.Find("Spike trap") != null)
-            return;
-
-        Transform template = items.Find("Exit");
-        if (template == null)
-            return;
-
-        // Reuse existing styling when maze objects were added after the HUD was built.
-        GameObject entry = Instantiate(template.gameObject, items, false);
-        entry.name = entryName;
-        TMP_Text label = entry.GetComponentInChildren<TMP_Text>();
-        if (label != null)
-            label.text = entryName;
-
-        Transform shape = entry.transform.Find("Icon/Shape");
-        Image icon = shape != null ? shape.GetComponent<Image>() : null;
-        if (icon != null)
-        {
-            icon.sprite = appearance.sprite;
-            icon.color = appearance.color;
-            icon.preserveAspect = true;
-            icon.rectTransform.sizeDelta = new Vector2(28f, 28f);
-        }
-
-        GridLayoutGroup grid = items.GetComponent<GridLayoutGroup>();
-        if (grid != null)
-            grid.constraintCount = items.childCount <= 4 ? 2 : 3;
     }
 
     private void Update()
