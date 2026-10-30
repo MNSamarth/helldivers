@@ -31,6 +31,19 @@ public class PlayerMovement : MonoBehaviour
     private float groundedUntil = float.NegativeInfinity;
     private float normalGravityScale;
     private Vector2 lastSupportVelocity;
+    private float slowUntil;
+    private float slowMultiplier = 1f;
+
+    public void ApplySlow(float multiplier, float duration)
+    {
+        if (!Active || duration <= 0f)
+            return;
+
+        slowMultiplier = Time.time < slowUntil
+            ? Mathf.Min(slowMultiplier, Mathf.Clamp(multiplier, 0.1f, 1f))
+            : Mathf.Clamp(multiplier, 0.1f, 1f);
+        slowUntil = Mathf.Max(slowUntil, Time.time + duration);
+    }
 
     public bool IsGrounded { get; private set; }
 
@@ -145,7 +158,8 @@ public class PlayerMovement : MonoBehaviour
         }
 
         Vector2 limited = body.linearVelocity;
-        limited.x = Mathf.Clamp(limited.x, -moveSpeed, moveSpeed);
+        float speedLimit = moveSpeed * (Time.time < slowUntil ? slowMultiplier : 1f);
+        limited.x = Mathf.Clamp(limited.x, -speedLimit, speedLimit);
         limited.y = Mathf.Max(limited.y, -maxFallSpeed);
         body.linearVelocity = limited;
     }
