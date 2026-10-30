@@ -207,7 +207,7 @@ public static class HudBuilder
         SpriteRenderer player = FindRenderer("Player");
         SpriteRenderer exit = FindRenderer<ExitTrigger>();
         SpriteRenderer star = FindRenderer<StarCollectible>();
-        SpriteRenderer portal = FindRenderer("Portals");
+        SpriteRenderer portal = FindRenderer<PortalController>() ?? FindRenderer("Portals");
         SpriteRenderer spike = FindRenderer<Hazard>();
 
         // Stars
@@ -248,7 +248,7 @@ public static class HudBuilder
 
         if (spike != null)
         {
-            CreateLegendItem(grid, "Spike trap", square, spike.color, 20f, 0f);
+            CreateLegendItem(grid, "Spike", spike.sprite, spike.color, 28f, 0f);
             items++;
         }
 
@@ -388,7 +388,7 @@ public static class HudBuilder
     private static SpriteRenderer FindRenderer<T>() where T : Component
     {
         T found = Object.FindAnyObjectByType<T>();
-        return found != null ? found.GetComponent<SpriteRenderer>() : null;
+        return found != null ? found.GetComponentInChildren<SpriteRenderer>(true) : null;
     }
 
     // Fits the maze into the screen area between the HUD bars. The HUD
