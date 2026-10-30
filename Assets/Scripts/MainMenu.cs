@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
-    private const int LevelCount = 4;
+    private const int LevelCount = 5;
 
     [Tooltip("Hidden in web builds, where the browser tab can't be closed.")]
     [SerializeField] private GameObject quitButton;
@@ -22,7 +22,7 @@ public class MainMenu : MonoBehaviour
     }
 
     // Keeps older checked-in menu scenes usable immediately while the editor
-    // builder creates the same four-button layout for future rebuilds.
+    // builder creates the same level-button layout for future rebuilds.
     private void EnsureLevelButtons()
     {
         Transform levels = transform.Find("Levels");

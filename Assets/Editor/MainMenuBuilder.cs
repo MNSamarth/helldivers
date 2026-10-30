@@ -29,6 +29,7 @@ public static class MainMenuBuilder
         "Assets/Scenes/Level1.unity",
         "Assets/Scenes/Level2.unity",
         "Assets/Scenes/Level3.unity",
+        "Assets/Scenes/Level4.unity",
     };
 
     private static readonly string[] HowToPlay =
