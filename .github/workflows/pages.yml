@@ -1,0 +1,52 @@
+name: Deploy game versions to Pages
+
+on:
+  push:
+    branches: [main]
+    tags: [alpha, beta]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Assemble site (one folder per tag, from each tag's docs/ build)
+        run: |
+          mkdir site
+          for v in alpha beta; do
+            mkdir -p "site/$v"
+            git archive "refs/tags/$v" docs | tar -x -C "site/$v" --strip-components=1
+          done
+          cat > site/index.html <<'HTML'
+          <!doctype html>
+          <meta charset="utf-8"><title>Helldivers</title>
+          <h1>Helldivers</h1>
+          <ul>
+            <li><a href="alpha/">Alpha</a></li>
+            <li><a href="beta/">Beta</a></li>
+          </ul>
+          HTML
+          touch site/.nojekyll
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4
