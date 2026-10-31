@@ -3,7 +3,6 @@ name: Deploy game versions to Pages
 on:
   push:
     branches: [main]
-    tags: [alpha, beta]
   workflow_dispatch:
 
 permissions:
